@@ -1,0 +1,111 @@
+---
+title: "Project 3"
+author: "Anthony Ferraro, Lauren Moylan, Anna Weiss"
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+linkcolor: blue
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning= FALSE)
+
+library(readxl)
+library(readr)
+library(ggplot2)
+library(mosaic)
+library(forcats)
+library(dplyr)
+```
+
+### Introduction
+
+We will be looking at football data from the years 2024 and 2025. Specifically, 
+we will look at rushing data for these years. Originally, each data set had 501 
+observations, but we will be filtering the data down to only the top 50 
+observations in the yards per attempt variable (Y/A). Then, we will be looking 
+at how yards per attempt is impacted by age.
+
+
+### Data Import
+```{r}
+Data_24 <- read_csv("2024 Data Actual - Sheet1.csv") 
+
+Data_25 <- read_csv("2025 Data - Sheet1.csv")
+
+Data_24 = Data_24 %>%
+  mutate(Season = 2024, as.factor(Season))
+
+Data_25 = Data_25 %>%
+  mutate(Season = 2025, as.factor(Season))
+```
+
+We gathered each data set from pro football reference and downloaded it as a 
+CSV file. 
+
+https://www.pro-football-reference.com/years/2024/rushing.htm
+https://www.pro-football-reference.com/years/2025/rushing.htm
+
+
+### Exploratory Data Analysis
+
+#### Yards Per Attempt Variable
+```{r}
+knitr::kable(favstats(~`Y/A`, data = Data_24))
+
+knitr::kable(favstats(~`Y/A`, data = Data_25))
+```
+
+We can see that there was a higher minimum yards per attempt in 2025 but a 
+lower maximum yards per attempt. Also, there was a higher average yards per 
+attempt among players in the 2024 season then the 2025 season.
+
+
+#### Age Variable
+```{r}
+ggplot(Data_24, aes(x = Age)) +
+  geom_bar(fill = "darkgreen") +
+  theme_bw() +
+  labs(
+    title = "2024"
+  )
+
+ggplot(Data_25, aes(x = Age)) +
+  geom_bar(fill = "darkgreen") +
+  theme_bw() +
+  labs(
+    title = "2025"
+  )
+```
+
+We can see in both 2024 and 2025 that there is a cluster of rushers with an age 
+of 25, which is considered the prime age for football players so that isn't 
+surprising. However, there seems to be a lot more rushers under the age on 25 
+in 2025 than 2024.
+
+
+### Research - How Age Impacts Yards per Attempt
+```{r}
+Combined_Data = bind_rows(Data_24, Data_25)
+
+ggplot(Combined_Data, aes(x = Age, y = `Y/A`, color = Player, group = Player)) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = "none") 
+
+```
+
+
+### Conclusion
+From this graph, we can see that it is hard to find a significant difference 
+among rushing performance year over year for players under the age of 27. 
+There are many different outcomes, with players increasing or decreasing their
+production with no real pattern. However, it is possible that at age 27 or older,
+rushers start to see more of a significant drop-off as out of the 9 rushers 
+age 27 or older that we have multiple seasons of data for, 7 of them got worse 
+or stayed the same.
+
+
+
